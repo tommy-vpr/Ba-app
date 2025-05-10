@@ -19,26 +19,6 @@ export const UserLoginSchema = z.object({
 
 export type UserLoginValues = z.infer<typeof UserLoginSchema>;
 
-// export const contactSchema = z.object({
-//   firstname: z.string().min(1, "First name is required"),
-//   lastname: z.string().min(1, "Last name is required"),
-//   jobtitle: z.string().min(1, "Job title is required"),
-//   email: z.string().email("Invalid email"),
-//   company: z.string().min(1, "Company is required"),
-//   phone: z.string().min(1, "Phone is required"),
-//   address: z.string().min(1, "Address is required"),
-//   city: z.string().min(1, "City is required"),
-//   state: z.string().min(1, "State is required"),
-//   zip: z.string().min(1, "ZIP is required"),
-
-//   // These will be added server-side too
-//   hs_lead_status: z.literal("samples").optional(),
-//   l2_lead_status: z.literal("pending visit").optional(),
-//   ba_email: z.string().email().optional(),
-// });
-
-// export type ContactSchema = z.infer<typeof contactSchema>;
-
 export const ContactSchema = z.object({
   firstname: z.string().trim().min(1, "First name is required"),
   lastname: z.string().trim().min(1, "Last name is required"),

@@ -61,16 +61,33 @@ export default function ContactPageClient({ id }: { id: string }) {
   // if (!contact) return <div>Loading...</div>;
   if (!contact) {
     return (
-      <div className="p-6 space-y-6 min-h-screen h-full">
-        <div className="flex gap-8 items-start">
-          <Skeleton className="h-36 w-36 rounded-full hidden md:inline-block" />
+      <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
+        <div className="flex flex-col md:flex-row rounded-md gap-8 p-6 bg-gray-200 dark:bg-black/30">
+          <Skeleton className="h-36 w-36 rounded-full hidden md:flex" />
+
           <div className="flex-1 space-y-4">
-            <Skeleton className="h-6 w-1/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-4 w-2/3" />
-            <Skeleton className="h-9 w-36" />
+            <Skeleton className="h-8 w-1/3" /> {/* Company name */}
+            <Skeleton className="h-5 w-1/4" /> {/* Status badge */}
+            <Skeleton className="h-4 w-1/2" /> {/* Email */}
+            <Skeleton className="h-4 w-1/3" /> {/* Phone */}
+            <Skeleton className="h-4 w-2/3" /> {/* Address */}
+            <div className="flex gap-2">
+              <Skeleton className="h-9 w-36" /> {/* Edit button */}
+              <Skeleton className="h-9 w-36" /> {/* Log meeting button */}
+            </div>
           </div>
+        </div>
+
+        <div className="flex items-center gap-4 my-6">
+          <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
+          <Skeleton className="h-6 w-32" />
+          <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
+        </div>
+
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-md" />
+          ))}
         </div>
       </div>
     );
@@ -86,7 +103,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
   return (
     <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
-      <div className="flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted bg-muted/50 dark:bg-black/30">
+      <div className="flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted bg-white shadow-sm dark:bg-black/30">
         <div
           className="hidden h-36 w-36 rounded-full md:flex m-auto items-center justify-center text-4xl md:text-[48px] font-bold uppercase transition-all duration-300 ease-in-out"
           style={{ backgroundColor: bg, color: text }}
@@ -163,11 +180,11 @@ export default function ContactPageClient({ id }: { id: string }) {
       </div>
 
       <div className="flex items-center gap-4 my-6">
-        <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
+        <hr className="flex-grow border-t border-gray-200 dark:border-zinc-700" />
         <div className="text-lg font-semibold whitespace-nowrap">
           Meeting Logs
         </div>
-        <hr className="flex-grow border-t border-gray-200 dark:border-zinc-800" />
+        <hr className="flex-grow border-t border-gray-200 dark:border-zinc-700" />
       </div>
 
       <MeetingLogList ref={logListRef} contactId={contact.id} />

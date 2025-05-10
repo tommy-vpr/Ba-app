@@ -20,6 +20,8 @@ import { useBrand } from "./BrandContext";
 import { usePathname } from "next/navigation";
 import { searchContactsByPostalCode } from "@/app/actions/actions";
 
+import { useSearchParams } from "next/navigation";
+
 type ContactContextType = {
   contacts: HubSpotContact[];
   setContacts: React.Dispatch<React.SetStateAction<HubSpotContact[]>>;
@@ -59,6 +61,8 @@ type ContactContextType = {
   setCursors: React.Dispatch<
     React.SetStateAction<Record<string, string | null>>
   >;
+  setAllContacts: React.Dispatch<React.SetStateAction<HubSpotContact[]>>;
+  setAllZips: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const ContactContext = createContext<ContactContextType | undefined>(undefined);
@@ -157,7 +161,8 @@ export function ContactProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refetchContacts = async () => {
+  const refetchContacts = async (targetPage: number = 1) => {
+    console.log("TARGET PAGE: ", targetPage);
     if (!session?.user?.email) return;
 
     setLoadingContacts(true);
@@ -166,9 +171,13 @@ export function ContactProvider({ children }: { children: ReactNode }) {
     try {
       const allRes = await fetchAllContactsByEmail(session.user.email, brand);
 
-      setAllContacts(allRes.results); // <- store full set
-      setContacts(allRes.results.slice(0, 12)); // show first page
-      setHasNext(allRes.results.length > 12);
+      // setAllContacts(allRes.results); // <- store full set
+      // setContacts(allRes.results.slice(0, 12)); // show first page
+      // setHasNext(allRes.results.length > 12);
+      setAllContacts(allRes.results);
+      setContacts(allRes.results.slice((targetPage - 1) * 12, targetPage * 12));
+      setHasNext(allRes.results.length > targetPage * 12);
+      setPage(targetPage);
 
       const zipSet = new Set(
         allRes.results
@@ -184,30 +193,29 @@ export function ContactProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      setAllZips([]);
-      setCursors({});
-      refetchContacts();
-    }
-  }, [status, brand]);
+  const searchParams = useSearchParams();
 
+  const pageParam = Number(searchParams.get("page") || "1");
+  const queryParam = searchParams.get("query") || "";
+  const statusParam = searchParams.get("status") || "all";
+  const zipParam = searchParams.get("zip") || null;
+
+  // 1. Initial fetch: load all contacts once (if not already loaded)
   useEffect(() => {
-    if (pathname === "/dashboard") {
-      setQuery("");
-      setSelectedStatus("all");
-      setSelectedZip(null);
-      setPage(1);
-      setZipContacts([]);
-      setSelectedContact(null);
-      setEditOpen(false);
-      setLogOpen(false);
-      setContactId(null);
-      setLogContactData(null);
-      setCursors({});
-      refetchContacts();
-    }
-  }, [pathname]);
+    if (status !== "authenticated" || allContacts.length > 0) return;
+
+    refetchContacts(pageParam);
+  }, [status, brand, allContacts.length]);
+
+  // 2. Filtering: run on every search param change
+  useEffect(() => {
+    if (!allContacts.length) return; // wait until contacts are available
+
+    setQuery(queryParam);
+    setSelectedStatus(statusParam);
+    setSelectedZip(zipParam);
+    fetchPage(pageParam, statusParam, queryParam, undefined, zipParam);
+  }, [pageParam, queryParam, statusParam, zipParam, allContacts.length]);
 
   return (
     <ContactContext.Provider
@@ -215,6 +223,7 @@ export function ContactProvider({ children }: { children: ReactNode }) {
         contacts,
         setContacts,
         allZips,
+        setAllZips,
         loadingContacts,
         loadingZips,
         refetchContacts,
@@ -242,6 +251,7 @@ export function ContactProvider({ children }: { children: ReactNode }) {
         zipContacts,
         setZipContacts,
         setCursors,
+        setAllContacts,
       }}
     >
       {children}

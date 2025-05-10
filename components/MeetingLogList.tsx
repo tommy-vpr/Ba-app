@@ -83,7 +83,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     return (
       <div
         key={meeting.id}
-        className="border border-muted bg-muted/50 dark:bg-black/30 p-4 rounded shadow-sm flex flex-col mb-4"
+        className="border border-muted bg-white dark:bg-black/30 p-4 rounded shadow-sm flex flex-col mb-4"
       >
         <div
           onClick={() => toggleCollapse(meeting.id)}
@@ -151,27 +151,45 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
     );
   };
 
+  // =============== Skeleton ===============
   if (loading) {
     const skeletons = expectedCount ?? 2;
+
     return (
-      <div className="flex flex-col md:flex-row gap-4 mt-4">
-        <div className="w-full md:w-1/2">
+      <div className="flex flex-col md:flex-row gap-0 md:gap-4 mt-4">
+        <div className="flex-1">
           {Array.from({ length: Math.ceil(skeletons / 2) }).map((_, i) => (
             <div
-              key={i}
-              className="border border-gray-200 dark:border-zinc-700 p-4 rounded shadow-sm mb-4 space-y-3"
+              key={`skeleton-left-${i}`}
+              className="bg-gray-200 dark:bg-black/30 p-4 rounded shadow-sm mb-4 space-y-3"
             >
-              <Skeleton className="h-5 w-3/4 rounded" />
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-4 w-3/5 rounded" /> {/* Date + title */}
+                <Skeleton className="h-4 w-4 rounded" /> {/* Chevron */}
+              </div>
+              <Skeleton className="h-3 w-1/3" /> {/* Outcome */}
+              {/* <div className="flex gap-2 mt-4 justify-end">
+                <Skeleton className="h-7 w-20 rounded" />
+                <Skeleton className="h-7 w-20 rounded" />
+              </div> */}
             </div>
           ))}
         </div>
-        <div className="w-full md:w-1/2">
+        <div className="flex-1">
           {Array.from({ length: Math.floor(skeletons / 2) }).map((_, i) => (
             <div
-              key={i}
-              className="border border-gray-200 dark:border-zinc-700 p-4 rounded shadow-sm mb-4 space-y-3"
+              key={`skeleton-right-${i}`}
+              className="bg-gray-200 dark:bg-black/30 p-4 rounded shadow-sm mb-4 space-y-3"
             >
-              <Skeleton className="h-5 w-3/4 rounded" />
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-4 w-3/5 rounded" />
+                <Skeleton className="h-4 w-4 rounded" />
+              </div>
+              <Skeleton className="h-3 w-1/3" />
+              {/* <div className="flex gap-2 mt-4 justify-end">
+                <Skeleton className="h-7 w-20 rounded" />
+                <Skeleton className="h-7 w-20 rounded" />
+              </div> */}
             </div>
           ))}
         </div>

@@ -114,14 +114,14 @@ export default function SearchAndFilter({ showZipFilter = true }: Props) {
           {query && (
             <button
               onClick={handleClear}
-              className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+              className="cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition"
               aria-label="Clear search"
             >
               <IconX size={16} />
             </button>
           )}
 
-          <button
+          {/* <button
             onClick={handleSearch}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
             aria-label="Search"
@@ -140,7 +140,7 @@ export default function SearchAndFilter({ showZipFilter = true }: Props) {
                 d="M21 21l-4.35-4.35M16 10a6 6 0 11-12 0 6 6 0 0112 0z"
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
       {/* {showZipFilter && <ZipcodeFilter />} */}

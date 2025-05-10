@@ -24,6 +24,7 @@ export default function DashboardPageContent() {
     setSelectedZip,
     selectedZip,
     setCursors,
+    setPage,
   } = useContactContext();
 
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
@@ -32,24 +33,51 @@ export default function DashboardPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  useEffect(() => {
-    const pageParam = Number(searchParams.get("page") || "1");
-    const statusParam = searchParams.get("status") || "all";
-    const queryParam = searchParams.get("query") || "";
-    const zipParam = searchParams.get("zip");
+  console.log(contacts);
 
+  // useEffect(() => {
+  //   const pageParam = Number(searchParams.get("page") || "1");
+  //   const statusParam = searchParams.get("status") || "all";
+  //   const queryParam = searchParams.get("query") || "";
+  //   const zipParam = searchParams.get("zip");
+
+  //   const safePage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+  //   setPage(safePage);
+  //   setQuery(queryParam);
+  //   setSelectedStatus(statusParam);
+  //   setSelectedZip(zipParam || null);
+
+  //   fetchPage(
+  //     safePage,
+  //     statusParam,
+  //     queryParam,
+  //     undefined,
+  //     zipParam || null
+  //   ).then(() => setHasLoadedOnce(true));
+  // }, [searchParams]);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search); // ← read directly
+    const pageParam = Number(params.get("page") || "1");
+    const statusParam = params.get("status") || "all";
+    const queryParam = params.get("query") || "";
+    const zipParam = params.get("zip");
+
+    const safePage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+    setPage(safePage);
     setQuery(queryParam);
     setSelectedStatus(statusParam);
     setSelectedZip(zipParam || null);
 
     fetchPage(
-      pageParam,
+      safePage,
       statusParam,
       queryParam,
       undefined,
       zipParam || null
     ).then(() => setHasLoadedOnce(true));
-  }, []);
+  }, [typeof window !== "undefined" && window.location.search]); // ✅ trigger on URL change
 
   useEffect(() => {
     if (!hasLoadedOnce) return;
@@ -59,16 +87,19 @@ export default function DashboardPageContent() {
     if (selectedZip) params.set("zip", selectedZip);
     params.set("page", String(page));
 
-    router.replace(`?${params.toString()}`);
+    // router.replace(`?${params.toString()}`);
+    const newUrl = `?${params.toString()}`;
+    if (window.location.search !== newUrl) {
+      router.replace(newUrl);
+    }
   }, [query, selectedStatus, selectedZip, page, hasLoadedOnce]);
 
-  useEffect(() => {
-    if (!hasLoadedOnce) return;
+  // useEffect(() => {
+  //   if (!hasLoadedOnce) return;
 
-    // Reset cursors and fetch from page 1 when filters change
-    setCursors({});
-    fetchPage(1, selectedStatus, query, undefined, selectedZip);
-  }, [query, selectedStatus, selectedZip]);
+  //   setCursors({});
+  //   fetchPage(1, selectedStatus, query, undefined, selectedZip);
+  // }, [query, selectedStatus, selectedZip]);
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-[1200px] mx-auto">
@@ -112,13 +143,9 @@ export default function DashboardPageContent() {
           <div className="ml-auto flex items-center gap-4 text-sm mt-auto">
             <Button
               onClick={() => {
-                fetchPage(
-                  page - 1,
-                  selectedStatus,
-                  query,
-                  undefined,
-                  selectedZip
-                );
+                const params = new URLSearchParams(window.location.search);
+                params.set("page", String(page - 1));
+                router.push(`?${params.toString()}`);
               }}
               disabled={page <= 1 || loadingContacts}
             >
@@ -128,13 +155,9 @@ export default function DashboardPageContent() {
             <span className="text-gray-400">Page {page}</span>
             <Button
               onClick={() => {
-                fetchPage(
-                  page + 1,
-                  selectedStatus,
-                  query,
-                  undefined,
-                  selectedZip
-                );
+                const params = new URLSearchParams(window.location.search);
+                params.set("page", String(page + 1));
+                router.push(`?${params.toString()}`);
               }}
               disabled={!hasNext || loadingContacts}
             >

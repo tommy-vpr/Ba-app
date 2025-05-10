@@ -65,6 +65,7 @@ export function LogMeetingForm({
     fetchPage,
     selectedStatus,
     query,
+    refetchContacts,
   } = useContactContext(); // from global ContactContext
   const { setContacts: setListContacts } = useContactList(); // from ContactListContext
 
@@ -147,12 +148,19 @@ export function LogMeetingForm({
         l2Status: values.l2Status,
         ownerId: selectedOwnerId,
       })
-        .then((newMeeting) => {
+        .then(async (newMeeting) => {
           toast.success("Meeting logged!");
           form.reset();
 
-          // ✅ Optimistic list update through context
-          fetchPage?.(1, selectedStatus, query, (prev) =>
+          console.log(newMeeting);
+
+          const updatedL2Status = newMeeting.properties.l2Status;
+
+          // 🔁 Force contact list state to update
+          const updateList = useGlobalList
+            ? setGlobalContacts
+            : setListContacts;
+          updateList((prev) =>
             prev.map((c) =>
               c.id === contactId
                 ? {
@@ -161,12 +169,31 @@ export function LogMeetingForm({
                       ...c.properties,
                       firstname: values.newFirstName,
                       jobtitle: values.jobTitle,
-                      l2_lead_status: values.l2Status,
+                      l2_lead_status: updatedL2Status, // ✅ from server
                     },
                   }
                 : c
             )
           );
+
+          await refetchContacts();
+
+          // ✅ Optimistic list update through context
+          // fetchPage?.(1, selectedStatus, query, (prev) =>
+          //   prev.map((c) =>
+          //     c.id === contactId
+          //       ? {
+          //           ...c,
+          //           properties: {
+          //             ...c.properties,
+          //             firstname: values.newFirstName,
+          //             jobtitle: values.jobTitle,
+          //             l2_lead_status: values.l2Status,
+          //           },
+          //         }
+          //       : c
+          //   )
+          // );
 
           mutateContact?.(); // Revalidate detail view
           refetchContactDetail?.(); // Re-fetch if needed elsewhere

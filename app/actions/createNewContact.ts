@@ -10,127 +10,83 @@ export async function createNewContact(
   input: CreateContactFormValues,
   brand: "litto" | "skwezed" = "litto"
 ) {
-  const session = await getServerSession(authOptions);
-  const baEmail = session?.user?.email;
-
-  if (!baEmail) {
-    return { success: false, message: "Unauthorized: You must be logged in." };
-  }
-
-  // ✅ Get preferred or fallback owner
-  let selectedOwnerId: string | undefined;
-
   try {
+    // ✅ 1. Validate session
+    const session = await getServerSession(authOptions);
+    const baEmail = session?.user?.email;
+
+    if (!baEmail) {
+      return {
+        success: false,
+        message: "Unauthorized: You must be logged in.",
+      };
+    }
+
+    // ✅ 2. Get HubSpot owners and preferred owner ID
     const owners = await getHubspotOwners(brand);
-    const hempOwner = owners.find(
+    const preferredOwner = owners.find(
       (owner: any) => owner.email?.toLowerCase() === "hemp@itslitto.com"
     );
+    const ownerId = preferredOwner?.id || owners?.[0]?.id;
 
-    selectedOwnerId = hempOwner?.id || owners?.[0]?.id;
-
-    if (!selectedOwnerId) {
-      return { success: false, message: "No HubSpot owners found." };
+    if (!ownerId) {
+      return { success: false, message: "No available HubSpot owners found." };
     }
-  } catch (error) {
-    return { success: false, message: "Failed to fetch HubSpot owners." };
-  }
 
-  // ✅ Validate input
-  const parse = ContactSchema.safeParse({
-    ...input,
-    ba_email: baEmail,
-    hs_lead_status: "Samples",
-    l2_lead_status: "pending visit",
-    hubspot_owner_id: selectedOwnerId,
-  });
+    // ✅ 3. Validate input using Zod
+    const parsed = ContactSchema.safeParse({
+      ...input,
+      ba_email: baEmail,
+      hs_lead_status: "Samples",
+      l2_lead_status: "pending visit",
+      hubspot_owner_id: ownerId,
+    });
 
-  if (!parse.success) {
-    const message = parse.error.errors[0]?.message || "Invalid input";
-    return { success: false, message };
-  }
+    if (!parsed.success) {
+      const zodError = parsed.error.format();
+      return {
+        success: false,
+        message: parsed.error.errors[0]?.message || "Invalid form submission",
+        errors: zodError,
+      };
+    }
 
-  const { baseUrl, token } = getHubspotCredentials(brand);
+    // ✅ 4. Prepare API request
+    const { baseUrl, token } = getHubspotCredentials(brand);
 
-  try {
     const response = await fetch(`${baseUrl}/crm/v3/objects/contacts`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ properties: parse.data }),
+      body: JSON.stringify({ properties: parsed.data }),
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      return { success: false, message: `Create failed: ${error}` };
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `HubSpot error: ${response.status} - ${errorText}`,
+      };
     }
 
-    const created = await response.json();
-    return { success: true, contactId: created.id };
+    const newCreatedContact = await response.json();
+
+    return {
+      success: true,
+      contactId: newCreatedContact.id,
+      contact: {
+        id: newCreatedContact.id,
+        properties: newCreatedContact.properties,
+      },
+    };
   } catch (error: any) {
+    console.error("createNewContact error:", error);
     return {
       success: false,
-      message: error?.message || "Unexpected error creating contact.",
+      message:
+        error?.message || "Unexpected error occurred during contact creation.",
     };
   }
 }
-
-// // app/actions/createNewContact.ts
-// "use server";
-
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/authOptions";
-// import { getHubspotCredentials } from "@/lib/getHubspotCredentials";
-// import { ContactSchema, CreateContactFormValues } from "@/lib/schemas";
-
-// export async function createNewContact(
-//   input: CreateContactFormValues,
-//   brand: "litto" | "skwezed" = "litto"
-// ) {
-//   const session = await getServerSession(authOptions);
-//   const baEmail = session?.user?.email;
-
-//   if (!baEmail) {
-//     return { success: false, message: "Unauthorized: You must be logged in." };
-//   }
-
-//   // Validate and enrich input with required defaults
-//   const parse = ContactSchema.safeParse({
-//     ...input,
-//     ba_email: baEmail,
-//     hs_lead_status: "Samples",
-//     l2_lead_status: "pending visit",
-//   });
-
-//   if (!parse.success) {
-//     const message = parse.error.errors[0]?.message || "Invalid input";
-//     return { success: false, message };
-//   }
-
-//   const { baseUrl, token } = getHubspotCredentials(brand);
-
-//   try {
-//     const response = await fetch(`${baseUrl}/crm/v3/objects/contacts`, {
-//       method: "POST",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ properties: parse.data }),
-//     });
-
-//     if (!response.ok) {
-//       const error = await response.text();
-//       return { success: false, message: `Create failed: ${error}` };
-//     }
-
-//     const created = await response.json();
-//     return { success: true, contactId: created.id };
-//   } catch (error: any) {
-//     return {
-//       success: false,
-//       message: error?.message || "Unexpected error creating contact.",
-//     };
-//   }
-// }

@@ -35,6 +35,7 @@ export function EditContactModal({ showDetails }: Props) {
     fetchPage,
     page,
     setContacts,
+    setAllContacts,
   } = useContactContext();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,8 +114,16 @@ export function EditContactModal({ showDetails }: Props) {
 
     // Optimistic UI
     mutateContact?.(updatedContact, false);
+
+    // setContacts((prev) =>
+    //   prev.map((c) => (c.id === contactId ? updatedContact : c))
+    // );
     setContacts((prev) =>
-      prev.map((c) => (c.id === contactId ? updatedContact : c))
+      prev.map((c) => (c.id === updatedContact.id ? updatedContact : c))
+    );
+
+    setAllContacts((prev) =>
+      prev.map((c) => (c.id === updatedContact.id ? updatedContact : c))
     );
 
     const result = await updateAndRevalidateZipPath(
