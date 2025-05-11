@@ -90,14 +90,19 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           className="flex justify-between items-start cursor-pointer hover:opacity-80 transition duration-150"
         >
           {/* <h4 className="text-md font-semibold">{title}</h4> */}
-          <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-200 capitalize flex items-center gap-1">
+          <h4 className="text-xs text-gray-600 dark:text-white capitalize flex items-center gap-1">
             <IconCalendarWeekFilled size={16} />
-            {moment(meeting.properties.hs_timestamp).fromNow()} ·{" "}
-            <span className="font-normal capitalize text-gray-400 dark:text-gray-500 text-sm">
-              (
+            {/* {moment(meeting.properties.hs_timestamp).fromNow()}  */}
+            {moment(meeting.properties.hs_timestamp).format("M/D/YYYY")}
+
+            <span className="mx-1 text-gray-400">·</span>
+
+            <span className="font-normal capitalize text-green-400 dark:text-green-400 text-[10px] px-2 py-0.5 rounded-full bg-green-100
+             dark:bg-green-800/20 border border-green-400">
+              
               {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
                 "unknown"}
-              )
+              
             </span>
           </h4>
 
@@ -116,7 +121,7 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
               transition={{ duration: 0.25 }}
               className="overflow-hidden min-h-0 mt-2"
             >
-              <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+              <p className="text-sm text-gray-700 dark:text-white whitespace-pre-wrap">
                 {meeting.properties.hs_meeting_body}
               </p>
               <p className="text-xs text-gray-500 mt-2">

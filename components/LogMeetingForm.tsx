@@ -66,6 +66,7 @@ export function LogMeetingForm({
     selectedStatus,
     query,
     refetchContacts,
+    setAllContacts
   } = useContactContext(); // from global ContactContext
   const { setContacts: setListContacts } = useContactList(); // from ContactListContext
 
@@ -134,7 +135,25 @@ export function LogMeetingForm({
             : c
         )
       );
+
+      setAllContacts((prev) =>
+        prev.map((c) =>
+          c.id === contactData.id
+            ? {
+                ...c,
+                properties: {
+                  ...c.properties,
+                  firstname: values.newFirstName,
+                  jobtitle: values.jobTitle,
+                  l2_lead_status: values.l2Status,
+                },
+              }
+            : c
+        )
+      );
     }
+
+  
 
     // ✅ Submit to server
     startTransition(() => {
@@ -152,14 +171,11 @@ export function LogMeetingForm({
           toast.success("Meeting logged!");
           form.reset();
 
-          console.log(newMeeting);
-
           const updatedL2Status = newMeeting.properties.l2Status;
 
-          // 🔁 Force contact list state to update
-          const updateList = useGlobalList
-            ? setGlobalContacts
-            : setListContacts;
+          // ✅ Finalize update from server response
+          const updateList = useGlobalList ? setGlobalContacts : setListContacts;
+
           updateList((prev) =>
             prev.map((c) =>
               c.id === contactId
@@ -169,37 +185,38 @@ export function LogMeetingForm({
                       ...c.properties,
                       firstname: values.newFirstName,
                       jobtitle: values.jobTitle,
-                      l2_lead_status: updatedL2Status, // ✅ from server
+                      l2_lead_status: updatedL2Status,
                     },
                   }
                 : c
             )
           );
 
-          await refetchContacts();
+          setAllContacts((prev) =>
+            prev.map((c) =>
+              c.id === contactId
+                ? {
+                    ...c,
+                    properties: {
+                      ...c.properties,
+                      firstname: values.newFirstName,
+                      jobtitle: values.jobTitle,
+                      l2_lead_status: updatedL2Status,
+                    },
+                  }
+                : c
+            )
+          );
 
-          // ✅ Optimistic list update through context
-          // fetchPage?.(1, selectedStatus, query, (prev) =>
-          //   prev.map((c) =>
-          //     c.id === contactId
-          //       ? {
-          //           ...c,
-          //           properties: {
-          //             ...c.properties,
-          //             firstname: values.newFirstName,
-          //             jobtitle: values.jobTitle,
-          //             l2_lead_status: values.l2Status,
-          //           },
-          //         }
-          //       : c
-          //   )
-          // );
+          // Optionally, re-run fetchPage if needed to re-filter current view
+          // fetchPage(page, selectedStatus, query, undefined, selectedZip);
 
-          mutateContact?.(); // Revalidate detail view
-          refetchContactDetail?.(); // Re-fetch if needed elsewhere
-          onSuccess?.(newMeeting); // Success passed new meeting
+          mutateContact?.(); // revalidate detail view
+          refetchContactDetail?.(); // just in case
+          onSuccess?.(newMeeting);
           setOpen(false);
         })
+
         .catch((err) => {
           console.error(err);
           toast.error("Failed to log meeting");

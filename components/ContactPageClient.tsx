@@ -101,6 +101,17 @@ export default function ContactPageClient({ id }: { id: string }) {
     return `${first[0] ?? ""}${second[0] ?? ""}`.toUpperCase();
   };
 
+  const fullAddress = `${contact.properties.address}, ${contact.properties.city}, ${contact.properties.state} ${contact.properties.zip}`;
+  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    fullAddress
+  )}`;
+  const phoneLink = contact.properties.phone
+    ? `tel:${contact.properties.phone}`
+    : null;
+  const emailLink = contact.properties.email
+    ? `mailto:${contact.properties.email}`
+    : null;
+
   return (
     <div className="min-h-screen h-full relative p-4 w-full max-w-[1200px] m-auto">
       <div className="flex flex-col md:flex-row rounded-md gap-8 p-6 border border-muted bg-white shadow-sm dark:bg-black/30">
@@ -126,26 +137,52 @@ export default function ContactPageClient({ id }: { id: string }) {
             />
           </div>
 
-          <div className="flex items-center gap-2 mt-4 dark:text-gray-300">
-            <IconMail size={18} />
-            {contact.properties?.email || "N/A"}
-          </div>
-
-          <div className="flex items-center gap-2 dark:text-gray-300 my-1">
-            <IconDeviceMobile size={18} />
-            {contact.properties?.phone || "N/A"}
-          </div>
-
-          <div className="flex gap-2 dark:text-gray-300">
-            <IconMapPin size={18} />
-            <div className="w-full">
-              {contact.properties?.address || "N/A"}{" "}
-              {contact.properties?.city || "N/A"},{" "}
-              {contact.properties?.state || "N/A"}{" "}
-              {contact.properties?.zip || "N/A"}
+          {/* Email */}
+          <div className="flex items-center gap-2 mt-4 dark:text-white">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition">
+              <IconMail size={18} />
             </div>
+            {emailLink ? (
+              <a href={emailLink} className="hover:underline">
+                {contact.properties.email}
+              </a>
+            ) : (
+              "N/A"
+            )}
           </div>
 
+          {/* Phone */}
+                    <div className="flex items-center gap-2 dark:text-white my-1">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition">
+              <IconDeviceMobile size={18} />
+            </div>
+            {phoneLink ? (
+              <a href={phoneLink} className="hover:underline">
+                {contact.properties.phone}
+              </a>
+            ) : (
+              "N/A"
+            )}
+          </div>
+
+          {/* Address */}
+          <div className="flex items-center gap-2 dark:text-white">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition">
+              <IconMapPin size={18} />
+            </div>
+            {contact.properties.address ? (
+              <a
+                href={googleMapsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {fullAddress}
+              </a>
+            ) : (
+              "N/A"
+            )}
+          </div>
           <div className="flex gap-2 items-center">
             <button
               onClick={() => {
