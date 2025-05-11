@@ -139,7 +139,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
           {/* Email */}
           <div className="flex items-center gap-2 mt-4 dark:text-white">
-            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-700 transition">
               <IconMail size={18} />
             </div>
             {emailLink ? (
@@ -153,7 +153,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
           {/* Phone */}
                     <div className="flex items-center gap-2 dark:text-white my-1">
-            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-700 transition">
               <IconDeviceMobile size={18} />
             </div>
             {phoneLink ? (
@@ -167,7 +167,7 @@ export default function ContactPageClient({ id }: { id: string }) {
 
           {/* Address */}
           <div className="flex items-center gap-2 dark:text-white">
-            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition">
+            <div className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-700 transition">
               <IconMapPin size={18} />
             </div>
             {contact.properties.address ? (
