@@ -211,10 +211,24 @@ export function ContactProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!allContacts.length) return; // wait until contacts are available
 
-    setQuery(queryParam);
-    setSelectedStatus(statusParam);
-    setSelectedZip(zipParam);
-    fetchPage(pageParam, statusParam, queryParam, undefined, zipParam);
+    // setQuery(queryParam);
+    // setSelectedStatus(statusParam);
+    // setSelectedZip(zipParam);
+    // fetchPage(pageParam, statusParam, queryParam, undefined, zipParam);
+    const isZipRoute = pathname?.startsWith("/dashboard/zipcodes");
+
+    if (isZipRoute) {
+      // Use context state (set by [zipcode]/page.tsx)
+      fetchPage(pageParam, selectedStatus, query, undefined, selectedZip);
+    } else {
+      // Use URL search params (global dashboard filters)
+      setQuery(queryParam);
+      setSelectedStatus(statusParam);
+      setSelectedZip(zipParam);
+      fetchPage(pageParam, statusParam, queryParam, undefined, zipParam);
+    }
+    // Works for zipcodes/zipcode
+    // fetchPage(pageParam, selectedStatus, query, undefined, selectedZip);
   }, [pageParam, queryParam, statusParam, zipParam, allContacts.length]);
 
   return (

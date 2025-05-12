@@ -90,19 +90,19 @@ export const MeetingLogList = forwardRef(function MeetingLogList(
           className="flex justify-between items-start cursor-pointer hover:opacity-80 transition duration-150"
         >
           {/* <h4 className="text-md font-semibold">{title}</h4> */}
-          <h4 className="text-xs text-gray-600 dark:text-white capitalize flex items-center gap-1">
-            <IconCalendarWeekFilled size={16} />
+          <h4 className="text-sm text-gray-600 dark:text-white capitalize flex items-center gap-1">
+            <IconCalendarWeekFilled size={18} />
             {/* {moment(meeting.properties.hs_timestamp).fromNow()}  */}
             {moment(meeting.properties.hs_timestamp).format("M/D/YYYY")}
 
             <span className="mx-1 text-gray-400">·</span>
 
-            <span className="font-normal capitalize text-green-400 dark:text-green-400 text-[10px] px-2 py-0.5 rounded-full bg-green-100
-             dark:bg-green-800/20 border border-green-400">
-              
+            <span
+              className="font-normal capitalize text-green-400 dark:text-green-400 text-[10px] px-2 py-0.5 rounded-full bg-green-100
+             dark:bg-green-800/20 border border-green-400"
+            >
               {meeting.properties.hs_meeting_outcome?.toLowerCase() ||
                 "unknown"}
-              
             </span>
           </h4>
 

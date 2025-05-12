@@ -8,6 +8,7 @@ import { useContactContext } from "@/context/ContactContext";
 
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { SpinningGears } from "@/components/SpinningGears";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function ContactsByZipPage() {
   const { zipcode } = useParams(); // <-- useParams for dynamic route param
@@ -17,6 +18,9 @@ export default function ContactsByZipPage() {
   const company = searchParams.get("company") || "";
   const status = searchParams.get("status") || "all";
   const pageParam = parseInt(searchParams.get("page") || "1", 10);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const {
     contacts,
@@ -49,17 +53,19 @@ export default function ContactsByZipPage() {
         <div className="flex justify-center items-center opacity-30">
           <SpinningGears />
         </div>
-        <p>
-          No contacts found for zip code: <strong>{decodedZip}</strong>
+        <p className="mt-6">
+          No contacts match your filters for zip code 90013.{" "}
+          <strong>{decodedZip}</strong>
         </p>
         <button
           onClick={() => {
             // Clear filters, but keep the current zip
             setQuery("");
             setSelectedStatus("all");
+            router.push(`${pathname}?zip=${decodedZip}`);
             fetchPage(1, "all", "", undefined, decodedZip);
           }}
-          className="cursor-pointer inline-flex items-center text-green-300 hover:text-green-400 font-medium transition"
+          className="cursor-pointer inline-flex items-center text-green-400 hover:text-green-300 dark:text-green-300 dark:hover:text-green-400 font-medium transition"
         >
           <IconArrowLeft size={18} className="mr-1" />
           Clear Filters
@@ -73,10 +79,12 @@ export default function ContactsByZipPage() {
       {/* search and filter */}
       <SearchAndFilter showZipFilter={false} zipScoped={true} />
 
-      <h1 className="font-bold my-8 flex items-center text-xl md:text-xl">
-        <IconMapPin className="text-zinc-400 dark:text-zinc-500 mr-2" />
-        <span className="text-zinc-400 dark:text-zinc-500">Zip Code:</span>
-        <span className="ml-1 text-gray-100">{decodedZip}</span>
+      <h1 className="font-semibold my-8 flex items-center text-xl md:text-xl">
+        <IconMapPin className="text-zinc-400 dark:text-zinc-500" />
+        <span className="text-zinc-400 dark:text-zinc-500 mr-1">Zip Code:</span>
+        <span className="ml-1 text-zinc-700 dark:text-gray-100">
+          {decodedZip}
+        </span>
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
