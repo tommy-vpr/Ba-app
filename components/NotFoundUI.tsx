@@ -18,7 +18,10 @@ const NotFoundUI = () => {
   };
 
   return (
-    <div className="p-6 flex flex-col items-center justify-center gap-4 w-full h-full min-h-screen text-center">
+    <div
+      className="p-6 flex flex-col items-center justify-center gap-4 w-full h-full min-h-screen text-center
+        dark:text-gray-100 dark:bg-[#1c1c1c] bg-gray-100"
+    >
       <div className="flex justify-center items-center opacity-30">
         <SpinningGears />
       </div>
@@ -28,8 +31,7 @@ const NotFoundUI = () => {
       <p>The page you're looking for doesn’t exist.</p>
       <Link
         href="/dashboard"
-        onClick={handleReset}
-        className="cursor-pointer inline-flex items-center text-green-300 hover:text-green-400 font-medium transition"
+        className="cursor-pointer inline-flex items-center text-green-400 hover:text-gray-300 dark:text-green-300 dark:hover:text-green-400 font-medium transition"
       >
         <IconArrowLeft size={18} className="mr-1" />
         Let’s head back
@@ -37,5 +39,4 @@ const NotFoundUI = () => {
     </div>
   );
 };
-
 export default NotFoundUI;
