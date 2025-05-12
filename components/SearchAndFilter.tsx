@@ -10,9 +10,13 @@ import { ZipcodeFilter } from "./ZipcodeFilter";
 
 type Props = {
   showZipFilter?: boolean;
+  zipScoped?: boolean;
 };
 
-export default function SearchAndFilter({ showZipFilter = true }: Props) {
+export default function SearchAndFilter({
+  showZipFilter = true,
+  zipScoped = false,
+}: Props) {
   const {
     query,
     setQuery,
@@ -48,11 +52,20 @@ export default function SearchAndFilter({ showZipFilter = true }: Props) {
 
   const handleSearch = () => fetchPage(1, selectedStatus, query);
 
+  // const handleClear = () => {
+  //   setQuery("");
+  //   setSelectedStatus("all");
+  //   setSelectedZip(null);
+  //   fetchPage(1, "all", "");
+  // };
   const handleClear = () => {
     setQuery("");
     setSelectedStatus("all");
-    setSelectedZip(null);
-    fetchPage(1, "all", "");
+
+    // ✅ Only clear the zip if not scoped
+    if (!zipScoped) setSelectedZip(null);
+
+    fetchPage(1, "all", "", undefined, zipScoped ? selectedZip : null);
   };
 
   useEffect(() => {

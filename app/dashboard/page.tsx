@@ -103,7 +103,8 @@ export default function DashboardPageContent() {
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-[1200px] mx-auto">
-      <SearchAndFilter />
+      {/* <SearchAndFilter /> */}
+      <SearchAndFilter showZipFilter zipScoped={false} />
 
       {loadingContacts ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

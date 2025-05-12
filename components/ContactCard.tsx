@@ -63,7 +63,7 @@ export function ContactCard({
       >
         <div className="cursor-pointer flex-grow">
           <CardContent className="p-4 flex flex-col gap-2">
-            <div className="font-bold uppercase text-md bg-gray-100 dark:bg-[#333] text-zinc-700 dark:text-gray-100 p-3 rounded">
+            <div className="font-bold uppercase text-md bg-gray-100 dark:bg-[#333] text-zinc-700 dark:text-gray-50 p-3 rounded">
               {company ?? "-"}
             </div>
 
