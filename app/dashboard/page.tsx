@@ -53,7 +53,8 @@ export default function DashboardPageContent() {
       undefined,
       zipParam || null
     ).then(() => setHasLoadedOnce(true));
-  }, [searchParams]); // ✅ this ensures it triggers on client-side navigation too
+  }, [searchParams.toString()]); // ✅ this ensures it triggers on client-side navigation too
+  // Before [searchParams]
 
   // useEffect(() => {
   //   const params = new URLSearchParams(window.location.search); // ← read directly
