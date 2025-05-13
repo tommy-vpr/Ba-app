@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { notFound, useParams, useSearchParams } from "next/navigation";
 import { IconArrowLeft, IconMapPin } from "@tabler/icons-react";
 import { ContactCard } from "@/components/ContactCard";
 import { useContactContext } from "@/context/ContactContext";
@@ -37,9 +37,13 @@ export default function ContactsByZipPage() {
     setQuery(company);
     setSelectedStatus(status);
     setSelectedZip(decodedZip);
-    fetchPage(pageParam, status, company, undefined, decodedZip).then(() =>
-      setHasLoadedOnce(true)
-    );
+    // fetchPage(pageParam, status, company, undefined, decodedZip).then(() =>
+    //   setHasLoadedOnce(true)
+    // );
+    fetchPage(pageParam, status, company, undefined, decodedZip).then(() => {
+      if (!contacts.length) notFound();
+      else setHasLoadedOnce(true);
+    });
   }, [decodedZip, company, status, pageParam]);
 
   // if (!contacts.length && hasLoadedOnce && !loadingContacts) {

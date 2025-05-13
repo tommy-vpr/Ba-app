@@ -32,7 +32,7 @@ const NotFoundUI = () => {
       <Link
         href="/dashboard"
         onClick={handleReset}
-        className="cursor-pointer inline-flex items-center text-green-400 hover:text-gray-300 dark:text-green-300 dark:hover:text-green-400 font-medium transition"
+        className="cursor-pointer inline-flex items-center text-green-400 hover:text-green-300 dark:text-green-300 dark:hover:text-green-400 font-medium transition"
       >
         <IconArrowLeft size={18} className="mr-1" />
         Let’s head back
