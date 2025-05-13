@@ -6,15 +6,17 @@ import { IconArrowLeft, IconMapPin } from "@tabler/icons-react";
 import { useContactContext } from "@/context/ContactContext";
 
 import { SpinningGears } from "@/components/SpinningGears";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const NotFoundUI = () => {
   const { setQuery, setSelectedZip, setSelectedStatus } = useContactContext();
+  const router = useRouter();
 
   const handleReset = () => {
     setQuery("");
     setSelectedZip(null);
     setSelectedStatus("all");
+    router.push("/dashboard");
   };
 
   return (
@@ -29,14 +31,13 @@ const NotFoundUI = () => {
         Well, this is awkward.
       </p>
       <p>The page you're looking for doesn’t exist.</p>
-      <Link
-        href="/dashboard"
+      <button
         onClick={handleReset}
         className="cursor-pointer inline-flex items-center text-green-400 hover:text-green-300 dark:text-green-300 dark:hover:text-green-400 font-medium transition"
       >
         <IconArrowLeft size={18} className="mr-1" />
         Let’s head back
-      </Link>
+      </button>
     </div>
   );
 };
