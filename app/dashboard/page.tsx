@@ -33,35 +33,11 @@ export default function DashboardPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  console.log(contacts);
-
-  // useEffect(() => {
-  //   const pageParam = Number(searchParams.get("page") || "1");
-  //   const statusParam = searchParams.get("status") || "all";
-  //   const queryParam = searchParams.get("query") || "";
-  //   const zipParam = searchParams.get("zip");
-
-  //   const safePage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
-
-  //   setPage(safePage);
-  //   setQuery(queryParam);
-  //   setSelectedStatus(statusParam);
-  //   setSelectedZip(zipParam || null);
-
-  //   fetchPage(
-  //     safePage,
-  //     statusParam,
-  //     queryParam,
-  //     undefined,
-  //     zipParam || null
-  //   ).then(() => setHasLoadedOnce(true));
-  // }, [searchParams]);
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search); // ← read directly
-    const pageParam = Number(params.get("page") || "1");
-    const statusParam = params.get("status") || "all";
-    const queryParam = params.get("query") || "";
-    const zipParam = params.get("zip");
+    const pageParam = Number(searchParams.get("page") || "1");
+    const statusParam = searchParams.get("status") || "all";
+    const queryParam = searchParams.get("query") || "";
+    const zipParam = searchParams.get("zip");
 
     const safePage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
 
@@ -77,7 +53,30 @@ export default function DashboardPageContent() {
       undefined,
       zipParam || null
     ).then(() => setHasLoadedOnce(true));
-  }, [typeof window !== "undefined" && window.location.search]); // ✅ trigger on URL change
+  }, [searchParams]); // ✅ this ensures it triggers on client-side navigation too
+
+  // useEffect(() => {
+  //   const params = new URLSearchParams(window.location.search); // ← read directly
+  //   const pageParam = Number(params.get("page") || "1");
+  //   const statusParam = params.get("status") || "all";
+  //   const queryParam = params.get("query") || "";
+  //   const zipParam = params.get("zip");
+
+  //   const safePage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+  //   setPage(safePage);
+  //   setQuery(queryParam);
+  //   setSelectedStatus(statusParam);
+  //   setSelectedZip(zipParam || null);
+
+  //   fetchPage(
+  //     safePage,
+  //     statusParam,
+  //     queryParam,
+  //     undefined,
+  //     zipParam || null
+  //   ).then(() => setHasLoadedOnce(true));
+  // }, [typeof window !== "undefined" && window.location.search]);
 
   useEffect(() => {
     if (!hasLoadedOnce) return;
