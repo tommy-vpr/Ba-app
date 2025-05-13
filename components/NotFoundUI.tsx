@@ -16,7 +16,7 @@ const NotFoundUI = () => {
     setQuery("");
     setSelectedZip(null);
     setSelectedStatus("all");
-    router.push("/dashboard");
+    router.replace("/dashboard?page=1");
   };
 
   return (
