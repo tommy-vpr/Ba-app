@@ -13,9 +13,9 @@ const NotFoundUI = () => {
   const router = useRouter();
 
   const handleReset = () => {
-    setQuery("");
-    setSelectedZip(null);
-    setSelectedStatus("all");
+    // setQuery("");
+    // setSelectedZip(null);
+    // setSelectedStatus("all");
     router.replace("/dashboard?page=1");
   };
 
